@@ -1,0 +1,18 @@
+{
+  "name": "aws-t12-task-scheduler-server",
+  "version": "1.0.0",
+  "description": "Server for scheduling AWS Lambda Functions as tasks",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "npm run tsc",
+    "clean-build": "rm -r dist && npm run build",
+    "dev": "npm run clean-build && node dist/index.js",
+    "lint": "eslint ./src/**/*.{ts,tsx} --fix",
+    "postinstall": "npm run tsc",
+    "start": "node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc": "tsc"
+  },
+  "author": "Arijit Saha <arijitbiley@gmail.com>",
+  "license": "ISC"
+}
