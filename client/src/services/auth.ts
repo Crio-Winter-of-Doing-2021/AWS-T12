@@ -21,7 +21,7 @@ const setUser = (user: User | {}) =>
 export const handleLogin = ({ username, password }: loginInfo) => {
   if (!isBrowser()) return false;
 
-  if (username === `john` && password === `pass`) {
+  if (username === `aws-t12` && password === `change-it`) {
     return setUser({
       name: `Johnny`,
       email: `johnny@example.org`,

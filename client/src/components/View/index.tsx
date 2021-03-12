@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { view } from "./view.module.css";
 
 type ViewProps = {
-  children: ReactNode[];
+  children: ReactNode;
   title: string;
 };
 
