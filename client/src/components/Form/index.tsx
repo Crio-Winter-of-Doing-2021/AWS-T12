@@ -18,7 +18,7 @@ const Form = ({ handleSubmit, handleUpdate }: FormProps) => (
     method="post"
     onSubmit={(event) => {
       handleSubmit(event);
-      navigate(`/app/profile`);
+      navigate(`/app/tasks`);
     }}
   >
     <p>

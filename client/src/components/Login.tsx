@@ -1,29 +1,41 @@
-import React from "react";
+import React, { Component, ChangeEvent, FormEvent } from "react";
+
+import { RouteComponentProps } from "@reach/router";
 import { navigate } from "gatsby";
 import Form from "./Form";
 import View from "./View";
 import { handleLogin, isLoggedIn } from "../services/auth";
 
-class Login extends React.Component {
-  state = {
-    username: ``,
-    password: ``,
-  };
+type LoginState = { username: string; password: string };
 
-  handleUpdate(event) {
+class Login extends Component<RouteComponentProps, LoginState> {
+  constructor(props: RouteComponentProps) {
+    super(props);
+
+    this.state = {
+      username: ``,
+      password: ``,
+    };
+  }
+
+  handleUpdate(event: ChangeEvent<HTMLInputElement>) {
     this.setState({
+      ...this.state,
       [event.target.name]: event.target.value,
     });
   }
 
-  handleSubmit(event) {
+  handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    handleLogin(this.state);
+    handleLogin({
+      username: this.state.username,
+      password: this.state.password,
+    });
   }
 
   render() {
     if (isLoggedIn()) {
-      navigate(`/app/profile`);
+      navigate(`/app/tasks`);
     }
 
     return (
