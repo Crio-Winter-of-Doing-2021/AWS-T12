@@ -1,12 +1,12 @@
 import React from "react";
 
-import { Link, navigate } from "@reach/router";
-import { getCurrentUser, isLoggedIn, logout } from "../../services/auth";
+import { Link } from "@reach/router";
+import { isAuthenticated, getProfile, logout } from "../../services/auth";
 import { status, status__text } from "./status.module.css";
 
 export default () => {
   let details;
-  if (!isLoggedIn()) {
+  if (!isAuthenticated()) {
     details = (
       <p className={status__text}>
         To get the full TaskMaster experience, you’ll need to
@@ -15,7 +15,7 @@ export default () => {
       </p>
     );
   } else {
-    const currentUser = getCurrentUser();
+    const currentUser = getProfile();
 
     if ("email" in currentUser) {
       const { name, email } = currentUser;
@@ -29,7 +29,7 @@ export default () => {
             href="/"
             onClick={(event) => {
               event.preventDefault();
-              logout(() => navigate(`/app/login`));
+              logout();
             }}
           >
             log out

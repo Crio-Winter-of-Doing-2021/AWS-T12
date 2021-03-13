@@ -1,52 +1,18 @@
-import React, { Component, ChangeEvent, FormEvent } from "react";
+import React from "react";
 
-import { RouteComponentProps } from "@reach/router";
 import { navigate } from "gatsby";
-import Form from "./Form";
+import { login, isAuthenticated } from "../services/auth";
 import View from "./View";
-import { handleLogin, isLoggedIn } from "../services/auth";
 
-type LoginState = { username: string; password: string };
+const Login = () => {
+  if (!isAuthenticated()) {
+    login();
 
-class Login extends Component<RouteComponentProps, LoginState> {
-  constructor(props: RouteComponentProps) {
-    super(props);
-
-    this.state = {
-      username: ``,
-      password: ``,
-    };
+    return <View title="Redirecting to Auth0 site..." />;
   }
 
-  handleUpdate(event: ChangeEvent<HTMLInputElement>) {
-    this.setState({
-      ...this.state,
-      [event.target.name]: event.target.value,
-    });
-  }
-
-  handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    handleLogin({
-      username: this.state.username,
-      password: this.state.password,
-    });
-  }
-
-  render() {
-    if (isLoggedIn()) {
-      navigate(`/app/tasks`);
-    }
-
-    return (
-      <View title="Log In">
-        <Form
-          handleUpdate={(e) => this.handleUpdate(e)}
-          handleSubmit={(e) => this.handleSubmit(e)}
-        />
-      </View>
-    );
-  }
-}
+  navigate("/app/tasks");
+  return null;
+};
 
 export default Login;

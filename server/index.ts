@@ -1,12 +1,14 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { json } from "body-parser";
 import cors from "cors";
 import routes from "./routes";
 
+import { clientOrigins, port } from "./config/env.dev";
+
 require("dotenv").config();
 
 const app = express();
-const port = process.env.PORT || 5000;
+app.use(cors({ origin: clientOrigins }));
 
 if (process.env.NODE_ENV === "Development") {
   // // Set mongoose to debug mode
@@ -17,11 +19,20 @@ if (process.env.NODE_ENV === "Development") {
   app.use(morgan("dev"));
 }
 
-app.use(cors());
 app.use(json());
 
 app.use("/", routes);
 
+app.use(function (
+  err: Error,
+  _req: Request,
+  res: Response,
+  _next: NextFunction
+) {
+  console.log(err);
+  res.status(500).send(err.message);
+});
+
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`API Server running on port ${port}`);
 });
