@@ -1,9 +1,9 @@
 import React from "react";
 import View from "./View";
-import { getCurrentUser } from "../services/auth";
+import { getProfile } from "../services/auth";
 
 const Tasks = () => {
-  const currentUser = getCurrentUser();
+  const currentUser = getProfile();
 
   if (!("email" in currentUser)) {
     return null;
