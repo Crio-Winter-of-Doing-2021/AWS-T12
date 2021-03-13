@@ -1,4 +1,4 @@
-interface loginInfo {
+interface LoginInfo {
   username: string;
   password: string;
 }
@@ -18,7 +18,7 @@ export const getUser = (): User | {} =>
 const setUser = (user: User | {}) =>
   window.localStorage.setItem("gatsbyUser", JSON.stringify(user));
 
-export const handleLogin = ({ username, password }: loginInfo) => {
+export const handleLogin = ({ username, password }: LoginInfo) => {
   if (!isBrowser()) return false;
 
   if (username === `aws-t12` && password === `change-it`) {
