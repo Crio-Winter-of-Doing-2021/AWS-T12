@@ -4,6 +4,7 @@ import { navigate } from "gatsby";
 const isBrowser = typeof window !== "undefined";
 
 const auth = new WebAuth({
+  audience: process.env.AUTH0_AUDIENCE ?? "",
   domain: process.env.AUTH0_DOMAIN ?? "",
   clientID: process.env.AUTH0_CLIENTID ?? "",
   redirectUri: process.env.AUTH0_CALLBACK,
@@ -87,3 +88,5 @@ export const logout = () => {
   auth.logout({ returnTo: "" });
   localStorage.setItem("isLoggedIn", "false");
 };
+
+export const getAccessToken = () => tokens.accessToken;
