@@ -1,4 +1,9 @@
-import TaskModel, { TaskStatus } from "../models/Task";
+import TaskModel, { TaskStatus, TaskDocument } from "../models/Task";
+import fetch from "node-fetch";
+
+import { scheduleJob } from "node-schedule";
+
+let jobs = {};
 
 export const retrieveAllTasks = async () => {
   const tasks = TaskModel.find().sort({ createdAt: -1 });
@@ -33,7 +38,45 @@ export const retrieveTaskInstancesPaginated = async (
   return tasks;
 };
 
+const updateTaskStatus = async (taskId: string, status: TaskStatus) => {
+  try {
+    await TaskModel.findOneAndUpdate(
+      { _id: taskId },
+      { status: status },
+      { new: true }
+    );
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+
+  return true;
+};
+
+const getTaskPerformer = (task: TaskDocument) => {
+  const taskPerformer = async () => {
+    await updateTaskStatus(task._id, "running");
+
+    const response = await fetch(task.taskURL, {
+      method: "GET",
+    });
+
+    if (response.status >= 200 && response.status < 300) {
+      await updateTaskStatus(task._id, "completed");
+    } else {
+      await updateTaskStatus(task._id, "failed");
+    }
+
+    delete jobs[task._id];
+  };
+
+  return taskPerformer;
+};
+
 export const schedule = async (taskURL: string, delayInMS: number) => {
+  // If delay is negative, return null
+  if (delayInMS < 0) return null;
+
   // Create the task object in the database
   const createdTask = await TaskModel.create({
     taskURL: taskURL,
@@ -41,5 +84,46 @@ export const schedule = async (taskURL: string, delayInMS: number) => {
     status: "scheduled",
   });
 
+  if (delayInMS == 0) {
+    const taskPerformer = getTaskPerformer(createdTask);
+    taskPerformer();
+  } else {
+    const jobTime = new Date(Date.now() + delayInMS);
+    jobs[createdTask._id] = scheduleJob(jobTime, getTaskPerformer(createdTask));
+  }
+
   return createdTask._id;
+};
+
+// Function to refresh node-schedule on server startup
+export const refreshScheduler = async () => {
+  // For tasks which were in running state (meaning the server failed
+  // during their run), since we do not
+  // know their fate, we update their status to failed
+  // to be on the safe side
+  const runningTasks = await retrieveTaskInstances("running");
+
+  for (let task of runningTasks) {
+    updateTaskStatus(task._id, "failed");
+  }
+
+  // Check previously scheduled tasks
+  const scheduledTasks = await retrieveTaskInstances("scheduled");
+
+  jobs = {};
+
+  for (let task of scheduledTasks) {
+    const taskTime = task.createdAt.getTime() + task.delayInMS;
+    const delayFromNow = taskTime - Date.now();
+
+    if (delayFromNow < 0) {
+      // Task's scheduled time has passed, so they must be updated to failed
+      // status
+      updateTaskStatus(task._id, "failed");
+    } else {
+      // re-add the tasks to node-schedule
+      const jobTime = new Date(Date.now() + delayFromNow);
+      jobs[task._id] = scheduleJob(jobTime, getTaskPerformer(task));
+    }
+  }
 };

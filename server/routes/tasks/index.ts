@@ -80,7 +80,7 @@ router.post(
       res.status(422).json("required body parameter 'taskURL' missing");
       return;
     }
-    if (!delayInMS) {
+    if (delayInMS === undefined) {
       res.status(422).json("required body parameter 'delayInMS' missing");
       return;
     }

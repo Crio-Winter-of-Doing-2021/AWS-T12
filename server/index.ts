@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 
 import routes from "./routes";
 import { clientOrigins, port, DB, NODE_ENV } from "./config/env.dev";
+import { refreshScheduler } from "./classes/Scheduler";
 
 require("dotenv").config();
 
@@ -30,6 +31,8 @@ if (NODE_ENV === "Development") {
   const morgan = require("morgan");
   app.use(morgan("dev"));
 }
+
+refreshScheduler();
 
 app.use(json());
 

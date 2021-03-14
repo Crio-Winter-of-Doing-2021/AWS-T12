@@ -13,6 +13,7 @@ export interface TaskDocument extends Document {
   taskURL: string;
   delayInMS: number;
   status: TaskStatus;
+  createdAt: Date;
 }
 
 // For model type
