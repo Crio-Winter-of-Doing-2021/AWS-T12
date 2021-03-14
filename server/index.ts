@@ -41,8 +41,8 @@ app.use(function (
   res: Response,
   _next: NextFunction
 ) {
-  console.log(err);
-  res.status(500).send(err.message);
+  console.error(err);
+  res.status(500).send("Internal Server Error. Contact arijitbiley@gmail.com");
 });
 
 app.listen(port, () => {

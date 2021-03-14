@@ -1,13 +1,23 @@
 import express, { Request, Response, NextFunction } from "express";
 
-import { schedule } from "../../classes/Scheduler";
+import { retrieveAllTasksPaginated, schedule } from "../../classes/Scheduler";
 import { checkJwt } from "../../auth/check-jwt";
 
 const router = express.Router();
 
 // GET / - fetches list of all tasks
-router.get("/", async (_req: Request, res: Response, _next: NextFunction) => {
-  res.status(200).json([]);
+router.get("/", async (req: Request, res: Response, next: NextFunction) => {
+  const defaultLimit = 100;
+  const defaultOffset = 0;
+
+  const offset = parseInt((req.query.offset || defaultOffset).toString(), 10);
+
+  try {
+    const tasks = await retrieveAllTasksPaginated(defaultLimit, offset);
+    res.status(200).json(tasks);
+  } catch (e) {
+    next(e);
+  }
 });
 
 // GET /my - fetches list of all tasks of signed in user
@@ -22,8 +32,8 @@ router.get(
 // POST / - creates a new scheduled task (protected API route)
 router.post(
   "/",
-  // checkJwt,
-  async (req: Request, res: Response, _next: NextFunction) => {
+  checkJwt,
+  async (req: Request, res: Response, next: NextFunction) => {
     const { taskURL, delayInMS } = req.body;
 
     // If any of the two required body parameters (taskURL, delayInMS) are
@@ -44,11 +54,7 @@ router.post(
       // with the newly created task object's ID
       res.status(201).json(id);
     } catch (error) {
-      console.error(error);
-      // Send Internal Server Error Status 500
-      res
-        .status(500)
-        .send("Internal Server Error. Contact arijitbiley@gmail.com");
+      next(error);
     }
   }
 );
