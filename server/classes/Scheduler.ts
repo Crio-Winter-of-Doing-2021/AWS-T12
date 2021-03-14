@@ -1,4 +1,4 @@
-import TaskModel from "../models/Task";
+import TaskModel, { TaskStatus } from "../models/Task";
 
 export const retrieveAllTasks = async () => {
   const tasks = TaskModel.find().sort({ createdAt: -1 });
@@ -10,6 +10,23 @@ export const retrieveAllTasksPaginated = async (
   offset: number
 ) => {
   const tasks = TaskModel.find()
+    .sort({ createdAt: -1 })
+    .skip(offset)
+    .limit(limit);
+  return tasks;
+};
+
+export const retrieveTaskInstances = async (status: TaskStatus) => {
+  const tasks = TaskModel.find({ status: status }).sort({ createdAt: -1 });
+  return tasks;
+};
+
+export const retrieveTaskInstancesPaginated = async (
+  status: TaskStatus,
+  limit: number,
+  offset: number
+) => {
+  const tasks = TaskModel.find({ status: status })
     .sort({ createdAt: -1 })
     .skip(offset)
     .limit(limit);

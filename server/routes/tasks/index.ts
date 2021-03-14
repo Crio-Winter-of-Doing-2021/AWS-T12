@@ -1,22 +1,60 @@
 import express, { Request, Response, NextFunction } from "express";
 
-import { retrieveAllTasksPaginated, schedule } from "../../classes/Scheduler";
+import {
+  retrieveAllTasksPaginated,
+  retrieveTaskInstancesPaginated,
+  schedule,
+} from "../../classes/Scheduler";
 import { checkJwt } from "../../auth/check-jwt";
 
 const router = express.Router();
 
-// GET / - fetches list of all tasks
+// GET / - fetches list of all tasks, with an option for status filter
 router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   const defaultLimit = 100;
   const defaultOffset = 0;
 
   const offset = parseInt((req.query.offset || defaultOffset).toString(), 10);
 
-  try {
-    const tasks = await retrieveAllTasksPaginated(defaultLimit, offset);
-    res.status(200).json(tasks);
-  } catch (e) {
-    next(e);
+  if (req.query.status) {
+    // Return tasks filtered by status, if the status filter is valid
+    // If status filter is invalid send 400: Bad request
+    const status = req.query.status.toString();
+
+    switch (status) {
+      case "scheduled":
+      case "cancelled":
+      case "running":
+      case "completed":
+      case "failed":
+        break;
+      default:
+        res
+          .status(400)
+          .json(
+            "status should be one of {scheduled, cancelled, running, completed, failed}"
+          );
+        return;
+    }
+
+    try {
+      const tasks = await retrieveTaskInstancesPaginated(
+        status,
+        defaultLimit,
+        offset
+      );
+      res.status(200).json(tasks);
+    } catch (e) {
+      next(e);
+    }
+  } else {
+    // No status filter, so return all tasks
+    try {
+      const tasks = await retrieveAllTasksPaginated(defaultLimit, offset);
+      res.status(200).json(tasks);
+    } catch (e) {
+      next(e);
+    }
   }
 });
 

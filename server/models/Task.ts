@@ -1,11 +1,18 @@
 import { Schema, model, Model, Document } from "mongoose";
 
+export type TaskStatus =
+  | "scheduled"
+  | "running"
+  | "completed"
+  | "failed"
+  | "cancelled";
+
 // Interface for Task Schema
 export interface TaskDocument extends Document {
   _id: string;
   taskURL: string;
   delayInMS: number;
-  status: "scheduled" | "running" | "completed" | "failed" | "cancelled";
+  status: TaskStatus;
 }
 
 // For model type
