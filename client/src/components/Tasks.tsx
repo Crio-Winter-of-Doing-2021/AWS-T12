@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import View from "./View";
 import { getProfile } from "../services/auth";
-import { getAccessToken } from "../services/auth";
 
 const API_URL = process.env.API_URL;
 if (!API_URL) {
@@ -12,7 +11,6 @@ if (!API_URL) {
 
 const Tasks = () => {
   const currentUser = getProfile();
-  const accessToken = getAccessToken();
 
   if (!("email" in currentUser)) {
     return null;
@@ -20,14 +18,13 @@ const Tasks = () => {
 
   const { name } = currentUser;
 
-  const loadMyTasks = async () => {
+  const loadTasks = async () => {
     try {
-      const jsonResponse = await fetch(API_URL + `/tasks/my`, {
+      const jsonResponse = await fetch(API_URL + `/tasks`, {
         method: "GET",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
         },
       });
 
@@ -45,7 +42,7 @@ const Tasks = () => {
   };
 
   useEffect(() => {
-    loadMyTasks();
+    loadTasks();
   }, []);
 
   return (

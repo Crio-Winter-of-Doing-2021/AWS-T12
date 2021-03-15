@@ -27,13 +27,13 @@ The Task Scheduler Library supports REST API endpoints which support the followi
 - [x] `TaskId schedule(TaskURL, timeInMS)`
 
   - **Description:** Schedules a Task after an initial delay of timeInMS and returns the created Task Instance Id.
-  - **API Endpoint:** `POST`: `/tasks`
+  - **API Endpoint:** `POST`: `/tasks` (Protected API Route)
 
 
 - [ ] `Boolean cancel(Taskid)`
 
   - **Description:** Takes in a Task Instance Id and cancels it. Returns a boolean value to confirm the task has been cancelled.
-  - **API Endpoint:** `DELETE`: `/tasks/<id>`
+  - **API Endpoint:** `DELETE`: `/tasks/<id>` (Protected API Route)
 
 
 - [ ] `TaskStatus checkStatus(Taskid)`
@@ -45,7 +45,7 @@ The Task Scheduler Library supports REST API endpoints which support the followi
 - [ ] `Boolean modify(TaskId, timeInMS)`
 
   - **Description:** Takes in a Task Instance Id and a new time delay and updates the task’s schedule to the new one. Return a boolean value to indicate a successful modification.
-  - **API Endpoint:** `PATCH`: `/tasks/<id>`
+  - **API Endpoint:** `PATCH`: `/tasks/<id>` (Protected API Route)
 
 
 - [x] `Task[] retrieveTaskInstances(TaskStatus)`

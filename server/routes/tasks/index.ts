@@ -58,15 +58,6 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-// GET /my - fetches list of all tasks of signed in user
-router.get(
-  "/my",
-  checkJwt,
-  async (_req: Request, res: Response, _next: NextFunction) => {
-    res.status(200).json(["private task"]);
-  }
-);
-
 // POST / - creates a new scheduled task (protected API route)
 router.post(
   "/",
@@ -84,6 +75,11 @@ router.post(
       res.status(422).json("required body parameter 'delayInMS' missing");
       return;
     }
+
+    // // INFO: this creatorEmail can be used to stamp the tasks with their
+    // // creator's email id
+    // // for further use and protection.
+    // const creatorEmail = req.user["https://dev-taskmaster-arijit.com/email"];
 
     try {
       const id = await schedule(taskURL, delayInMS);
