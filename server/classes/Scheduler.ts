@@ -150,12 +150,17 @@ const getTaskPerformer = (task: TaskDocument) => {
   return taskPerformer;
 };
 
-export const schedule = async (taskURL: string, delayInMS: number) => {
+export const schedule = async (
+  title: string,
+  taskURL: string,
+  delayInMS: number
+) => {
   // If delay is negative, return null
   if (delayInMS < 0) return null;
 
   // Create the task object in the database
   const createdTask = await TaskModel.create({
+    title: title,
     taskURL: taskURL,
     delayInMS: delayInMS,
     status: "scheduled",

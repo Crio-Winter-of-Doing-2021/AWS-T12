@@ -10,10 +10,15 @@ export type TaskStatus =
 // Interface for Task Schema
 export interface TaskDocument extends Document {
   _id: string;
+  title: string;
   taskURL: string;
   delayInMS: number;
   status: TaskStatus;
   createdAt: Date;
+  updatedAt: Date;
+  creatorEmail: string;
+  // retryCount: number;
+  // retryDelayInMS: number;
 }
 
 // For model type
