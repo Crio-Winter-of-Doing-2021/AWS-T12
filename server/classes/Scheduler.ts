@@ -63,6 +63,18 @@ export const retrieveTaskInstance = async (taskId: string) => {
   return task;
 };
 
+export const retrieveTaskInstancesPaginated = async (
+  status: TaskStatus,
+  limit: number,
+  offset: number
+) => {
+  const tasks = await TaskModel.find({ status: status })
+    .sort({ updatedAt: -1 })
+    .skip(offset)
+    .limit(limit);
+  return tasks;
+};
+
 export const retrieveUserTaskInstancesPaginated = async (
   email: string,
   status: TaskStatus,
@@ -151,6 +163,7 @@ const getTaskPerformer = (task: TaskDocument) => {
 };
 
 export const schedule = async (
+  creatorEmail: string,
   title: string,
   taskURL: string,
   delayInMS: number
@@ -160,6 +173,7 @@ export const schedule = async (
 
   // Create the task object in the database
   const createdTask = await TaskModel.create({
+    creatorEmail: creatorEmail,
     title: title,
     taskURL: taskURL,
     delayInMS: delayInMS,
