@@ -6,7 +6,12 @@ import { scheduleJob } from "node-schedule";
 let jobs = {};
 
 export const retrieveAllTasks = async () => {
-  const tasks = TaskModel.find().sort({ createdAt: -1 });
+  const tasks = await TaskModel.find().sort({ updatedAt: -1 });
+  return tasks;
+};
+
+export const retrieveAllUserTasks = async (email: string) => {
+  const tasks = TaskModel.find({ creatorEmail: email }).sort({ updatedAt: -1 });
   return tasks;
 };
 
@@ -14,25 +19,58 @@ export const retrieveAllTasksPaginated = async (
   limit: number,
   offset: number
 ) => {
-  const tasks = TaskModel.find()
-    .sort({ createdAt: -1 })
+  const tasks = await TaskModel.find()
+    .sort({ updatedAt: -1 })
+    .skip(offset)
+    .limit(limit);
+  return tasks;
+};
+
+export const retrieveAllUserTasksPaginated = async (
+  email: string,
+  limit: number,
+  offset: number
+) => {
+  const tasks = await TaskModel.find({ creatorEmail: email })
+    .sort({ updatedAt: -1 })
     .skip(offset)
     .limit(limit);
   return tasks;
 };
 
 export const retrieveTaskInstances = async (status: TaskStatus) => {
-  const tasks = TaskModel.find({ status: status }).sort({ createdAt: -1 });
+  const tasks = await TaskModel.find({ status: status }).sort({
+    updatedAt: -1,
+  });
   return tasks;
 };
 
-export const retrieveTaskInstancesPaginated = async (
+export const retrieveUserTaskInstances = async (
+  email: string,
+  status: TaskStatus
+) => {
+  const tasks = await TaskModel.find({
+    creatorEmail: email,
+    status: status,
+  }).sort({
+    updatedAt: -1,
+  });
+  return tasks;
+};
+
+export const retrieveTaskInstance = async (taskId: string) => {
+  const task = await TaskModel.findOne({ _id: taskId });
+  return task;
+};
+
+export const retrieveUserTaskInstancesPaginated = async (
+  email: string,
   status: TaskStatus,
   limit: number,
   offset: number
 ) => {
-  const tasks = TaskModel.find({ status: status })
-    .sort({ createdAt: -1 })
+  const tasks = await TaskModel.find({ creatorEmail: email, status: status })
+    .sort({ updatedAt: -1 })
     .skip(offset)
     .limit(limit);
   return tasks;
@@ -51,6 +89,45 @@ const updateTaskStatus = async (taskId: string, status: TaskStatus) => {
   }
 
   return true;
+};
+
+export const cancel = async (taskId: string) => {
+  if (taskId in jobs) {
+    jobs[taskId].cancel();
+    delete jobs[taskId];
+  }
+
+  return updateTaskStatus(taskId, "cancelled");
+};
+
+export const modify = async (taskId: string, delayInMS: number) => {
+  if (delayInMS < 0) return false;
+
+  if (taskId in jobs) {
+    jobs[taskId].cancel();
+    delete jobs[taskId];
+  }
+
+  try {
+    const modifiedTask = await TaskModel.findOneAndUpdate(
+      { _id: taskId, delayInMS: delayInMS },
+      { new: true }
+    );
+
+    if (delayInMS == 0) {
+      const taskPerformer = getTaskPerformer(modifiedTask);
+      taskPerformer();
+    } else {
+      const jobTime = new Date(Date.now() + delayInMS);
+      jobs[modifiedTask._id] = scheduleJob(
+        jobTime,
+        getTaskPerformer(modifiedTask)
+      );
+    }
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
 };
 
 const getTaskPerformer = (task: TaskDocument) => {
@@ -104,7 +181,7 @@ export const refreshScheduler = async () => {
   const runningTasks = await retrieveTaskInstances("running");
 
   for (let task of runningTasks) {
-    updateTaskStatus(task._id, "failed");
+    updateTaskStatus(task._id, "cancelled");
   }
 
   // Check previously scheduled tasks
@@ -113,13 +190,13 @@ export const refreshScheduler = async () => {
   jobs = {};
 
   for (let task of scheduledTasks) {
-    const taskTime = task.createdAt.getTime() + task.delayInMS;
+    const taskTime = task.updatedAt.getTime() + task.delayInMS;
     const delayFromNow = taskTime - Date.now();
 
     if (delayFromNow < 0) {
-      // Task's scheduled time has passed, so they must be updated to failed
+      // Task's scheduled time has passed, so they must be updated to cancelled
       // status
-      updateTaskStatus(task._id, "failed");
+      updateTaskStatus(task._id, "cancelled");
     } else {
       // re-add the tasks to node-schedule
       const jobTime = new Date(Date.now() + delayFromNow);
