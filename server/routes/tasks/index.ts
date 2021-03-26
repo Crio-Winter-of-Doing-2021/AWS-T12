@@ -3,6 +3,7 @@ import express, { Request, Response, NextFunction } from "express";
 import {
   retrieveAllTasksPaginated,
   retrieveAllUserTasksPaginated,
+  retrieveTaskInstance,
   retrieveTaskInstancesPaginated,
   retrieveUserTaskInstancesPaginated,
   schedule,
@@ -122,6 +123,32 @@ router.get(
   }
 );
 
+// GET /<id> - get the details of a single task
+router.get("/:id", async (req: Request, res: Response) => {
+  const taskId = req.params.id.toString();
+  const task = await retrieveTaskInstance(taskId);
+
+  if (task == null) {
+    res.status(404).send("The taskId does not match a task in the database");
+    return;
+  }
+
+  res.json(task);
+});
+
+// GET /<id>/status - get the status of a single task
+router.get("/:id/status", async (req: Request, res: Response) => {
+  const taskId = req.params.id.toString();
+  const task = await retrieveTaskInstance(taskId);
+
+  if (task == null) {
+    res.status(404).send("The taskId does not match a task in the database");
+    return;
+  }
+
+  res.json(task.status);
+});
+
 // POST / [protected]- creates a new scheduled task
 router.post(
   "/",
@@ -157,5 +184,10 @@ router.post(
     }
   }
 );
+
+// PUT /<id>/cancel [protected]- cancels logged in user's task with taskId id
+
+// PATCH /<id> [protected]- modifies the logged in user's scheduled task with
+// taskId id
 
 export default router;

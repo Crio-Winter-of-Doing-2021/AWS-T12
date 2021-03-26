@@ -59,8 +59,13 @@ export const retrieveUserTaskInstances = async (
 };
 
 export const retrieveTaskInstance = async (taskId: string) => {
-  const task = await TaskModel.findOne({ _id: taskId });
-  return task;
+  try {
+    const task = await TaskModel.findOne({ _id: taskId });
+    return task;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 };
 
 export const retrieveTaskInstancesPaginated = async (
