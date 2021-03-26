@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 
 import {
+  cancel,
   retrieveAllTasksPaginated,
   retrieveAllUserTasksPaginated,
   retrieveTaskInstance,
@@ -128,7 +129,7 @@ router.get("/:id", async (req: Request, res: Response) => {
   const taskId = req.params.id.toString();
   const task = await retrieveTaskInstance(taskId);
 
-  if (task == null) {
+  if (task === null) {
     res.status(404).send("The taskId does not match a task in the database");
     return;
   }
@@ -141,7 +142,7 @@ router.get("/:id/status", async (req: Request, res: Response) => {
   const taskId = req.params.id.toString();
   const task = await retrieveTaskInstance(taskId);
 
-  if (task == null) {
+  if (task === null) {
     res.status(404).send("The taskId does not match a task in the database");
     return;
   }
@@ -186,6 +187,18 @@ router.post(
 );
 
 // PUT /<id>/cancel [protected]- cancels logged in user's task with taskId id
+router.put("/:id", async (req: Request, res: Response) => {
+  const taskId = req.params.id.toString();
+
+  const task = await retrieveTaskInstance(taskId);
+  if (task === null) {
+    res.status(404).json(false);
+    return;
+  }
+
+  const cancelled = await cancel(taskId);
+  res.status(cancelled ? 200 : 500).json(cancelled);
+});
 
 // PATCH /<id> [protected]- modifies the logged in user's scheduled task with
 // taskId id
