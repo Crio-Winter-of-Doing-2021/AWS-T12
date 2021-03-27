@@ -127,7 +127,8 @@ export const modify = async (taskId: string, delayInMS: number) => {
 
   try {
     const modifiedTask = await TaskModel.findOneAndUpdate(
-      { _id: taskId, delayInMS: delayInMS },
+      { _id: taskId },
+      { delayInMS: delayInMS, updatedAt: new Date() },
       { new: true }
     );
 
@@ -141,6 +142,8 @@ export const modify = async (taskId: string, delayInMS: number) => {
         getTaskPerformer(modifiedTask)
       );
     }
+
+    return true;
   } catch (e) {
     console.error(e);
     return false;
@@ -151,17 +154,21 @@ const getTaskPerformer = (task: TaskDocument) => {
   const taskPerformer = async () => {
     await updateTaskStatus(task._id, "running");
 
-    const response = await fetch(task.taskURL, {
-      method: "GET",
-    });
+    try {
+      const response = await fetch(task.taskURL, {
+        method: "GET",
+      });
 
-    if (response.status >= 200 && response.status < 300) {
-      await updateTaskStatus(task._id, "completed");
-    } else {
+      if (response.status >= 200 && response.status < 300) {
+        await updateTaskStatus(task._id, "completed");
+      } else {
+        await updateTaskStatus(task._id, "failed");
+      }
+
+      delete jobs[task._id];
+    } catch (e) {
       await updateTaskStatus(task._id, "failed");
     }
-
-    delete jobs[task._id];
   };
 
   return taskPerformer;
@@ -182,6 +189,7 @@ export const schedule = async (
     title: title,
     taskURL: taskURL,
     delayInMS: delayInMS,
+    updatedAt: new Date(),
     status: "scheduled",
   });
 

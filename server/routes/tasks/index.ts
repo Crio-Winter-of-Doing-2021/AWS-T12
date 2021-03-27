@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 
 import {
   cancel,
+  modify,
   retrieveAllTasksPaginated,
   retrieveAllUserTasksPaginated,
   retrieveTaskInstance,
@@ -187,7 +188,7 @@ router.post(
 );
 
 // PUT /<id>/cancel [protected]- cancels logged in user's task with taskId id
-router.put("/:id", async (req: Request, res: Response) => {
+router.put("/:id/cancel", checkJwt, async (req: Request, res: Response) => {
   const taskId = req.params.id.toString();
 
   const task = await retrieveTaskInstance(taskId);
@@ -202,5 +203,23 @@ router.put("/:id", async (req: Request, res: Response) => {
 
 // PATCH /<id> [protected]- modifies the logged in user's scheduled task with
 // taskId id
+router.patch("/:id", checkJwt, async (req: Request, res: Response) => {
+  const taskId = req.params.id.toString();
+  const { delayInMS } = req.body;
+
+  if (delayInMS === undefined) {
+    res.status(422).json("required body parameter 'delayInMS' missing");
+    return;
+  }
+
+  const task = await retrieveTaskInstance(taskId);
+  if (task === null) {
+    res.status(404).json(false);
+    return;
+  }
+
+  const modified = await modify(taskId, delayInMS);
+  res.status(modified ? 200 : 500).json(modified);
+});
 
 export default router;
