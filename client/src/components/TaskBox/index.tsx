@@ -9,8 +9,9 @@ import {
   taskTime,
   taskStatus,
 } from "./taskbox.module.css";
+import { Link } from "gatsby";
 
-type TaskStatus =
+export type TaskStatus =
   | "scheduled"
   | "running"
   | "completed"
@@ -19,17 +20,19 @@ type TaskStatus =
 
 export interface Task {
   _id: string;
+  title: string;
   taskURL: string;
   delayInMS: number;
   status: TaskStatus;
-  createdAt: Date;
+  updatedAt: Date;
+  creatorEmail: string;
 }
 
 type TaskProps = {
   task: Task;
 };
 
-function getScheduledTimeString(creationTime: Date, delayInMS: number) {
+export function getScheduledTimeString(creationTime: Date, delayInMS: number) {
   let scheduledTime = new Date(new Date(creationTime).getTime() + delayInMS);
   let result =
     `${scheduledTime.toLocaleTimeString([], {
@@ -91,9 +94,11 @@ const TaskBox = ({ task }: TaskProps) => (
     <div className={columnDivider}>
       <div className={leftColumn}>
         <p className={taskId}>{task._id}</p>
-        <p className={taskURL}>{task.taskURL}</p>
+        <Link to={`/app/task/${task._id}`}>
+          <p className={taskURL}>{task.title ?? "#No title"}</p>
+        </Link>
         <p className={taskTime}>
-          {getScheduledTimeString(task.createdAt, task.delayInMS)}
+          {getScheduledTimeString(task.updatedAt, task.delayInMS)}
         </p>
       </div>
       <div className={rightColumn}>
