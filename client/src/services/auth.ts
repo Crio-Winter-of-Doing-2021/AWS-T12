@@ -24,7 +24,12 @@ let tokens: TokenType = {
   expiresAt: false,
 };
 
-let user = {};
+let user:
+  | {}
+  | {
+      email: string;
+      name: string;
+    } = {};
 
 export const isAuthenticated = () => {
   if (!isBrowser) {
