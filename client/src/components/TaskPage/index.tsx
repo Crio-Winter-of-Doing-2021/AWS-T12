@@ -1,7 +1,14 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import View from "../View";
 import { getProfile, getAccessToken } from "../../services/auth";
-import { Task, TaskStatus, getScheduledTimeString } from "../TaskBox";
+import {
+  Task,
+  TaskStatus,
+  TaskResponse,
+  getScheduledTimeString,
+  getStatusTextColor,
+  getStatusString,
+} from "../TaskBox";
 import {
   taskDetailsDiv,
   taskInfoDiv,
@@ -31,36 +38,6 @@ type TaskPageProps = {
   taskID: string;
 };
 
-function getStatusTextColor(status: TaskStatus) {
-  switch (status) {
-    case "failed":
-      return "rgba(200, 34, 34, 1)";
-    case "completed":
-      return "rgba(46, 139, 87, 1)";
-    case "scheduled":
-      return "rgba(0, 0, 100, 1)";
-    case "cancelled":
-      return "rgba(255, 140, 0, 1)";
-    case "running":
-      return "rgba(184, 134, 11, 1)";
-  }
-}
-
-function getStatusString(status: TaskStatus) {
-  switch (status) {
-    case "failed":
-      return "Failed";
-    case "completed":
-      return "Completed";
-    case "scheduled":
-      return "Scheduled";
-    case "cancelled":
-      return "Cancelled";
-    case "running":
-      return "Running";
-  }
-}
-
 const TaskPage = ({ taskID }: TaskPageProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isNotFound, setIsNotFound] = useState(false);
@@ -72,12 +49,17 @@ const TaskPage = ({ taskID }: TaskPageProps) => {
   const [delayInMS, setDelayInMs] = useState(0);
   const [isEditingTime, setIsEditingTime] = useState(false);
   const [scheduledTime, setScheduledTime] = useState("");
+  const [response, setResponse] = useState<TaskResponse>({
+    status: null,
+    body: "",
+  });
 
   const setTask = (task: Task) => {
     setTitle(task.title);
     setTaskURL(task.taskURL);
     setStatus(task.status);
     setCreatorEmail(task.creatorEmail);
+    setResponse(task.response);
     setUpdatedAt(task.updatedAt);
     setDelayInMs(task.delayInMS);
     const tzoffset = new Date().getTimezoneOffset() * 60000;
@@ -202,6 +184,11 @@ const TaskPage = ({ taskID }: TaskPageProps) => {
           <span className={taskInfo}>{taskURL}</span>
         </div>
 
+        <div className={taskInfoDiv}>
+          <label className={taskInfoLabel}>Created by:</label>
+          <span className={taskInfo}>{creatorEmail}</span>
+        </div>
+
         <div className={taskScheduledTimeDiv}>
           <div className={taskInfoDiv}>
             <label className={taskInfoLabel}>Scheduled at:</label>
@@ -262,6 +249,26 @@ const TaskPage = ({ taskID }: TaskPageProps) => {
             {getStatusString(status)}
           </span>
         </div>
+
+        {(status === "completed" || status === "failed") &&
+          (response.status == null ? (
+            <div className={taskInfoDiv}>
+              <label className={taskInfoLabel}>Reason:</label>
+              <span className={taskInfo}>The taskURL was not callable.</span>
+            </div>
+          ) : (
+            <>
+              <div className={taskInfoDiv}>
+                <label className={taskInfoLabel}>Response Status:</label>
+                <span className={taskInfo}>{response.status}</span>
+              </div>
+
+              <div className={taskInfoDiv}>
+                <label className={taskInfoLabel}>Response Body:</label>
+                <code>{response.body}</code>
+              </div>
+            </>
+          ))}
 
         {status === "scheduled" && creatorEmail === currentUser.email && (
           <div className={taskCancelDiv}>

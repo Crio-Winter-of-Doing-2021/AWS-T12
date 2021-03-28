@@ -108,6 +108,25 @@ const updateTaskStatus = async (taskId: string, status: TaskStatus) => {
   return true;
 };
 
+const finishTask = async (
+  taskId: string,
+  status: TaskStatus,
+  response: { status: number; body: string }
+) => {
+  try {
+    await TaskModel.findOneAndUpdate(
+      { _id: taskId },
+      { status: status, response: response },
+      { new: true }
+    );
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+
+  return true;
+};
+
 export const cancel = async (taskId: string) => {
   if (taskId in jobs) {
     jobs[taskId].cancel();
@@ -160,14 +179,23 @@ const getTaskPerformer = (task: TaskDocument) => {
       });
 
       if (response.status >= 200 && response.status < 300) {
-        await updateTaskStatus(task._id, "completed");
+        await finishTask(task._id, "completed", {
+          status: response.status,
+          body: await response.text(),
+        });
       } else {
-        await updateTaskStatus(task._id, "failed");
+        await finishTask(task._id, "failed", {
+          status: response.status,
+          body: "",
+        });
       }
 
       delete jobs[task._id];
     } catch (e) {
-      await updateTaskStatus(task._id, "failed");
+      await finishTask(task._id, "failed", {
+        status: null,
+        body: "",
+      });
     }
   };
 

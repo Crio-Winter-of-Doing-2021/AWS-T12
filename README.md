@@ -5,6 +5,11 @@ Team Members:
 - [Arijit Saha](https://github.com/TheArijitSaha)
 - [Rohit Kumar](https://github.com/IamRo45)
 
+## Current TODOs
+
+- [ ] Add query parameters for AWS Lambda
+- [ ] Add recall times (maybe not enough time)
+
 ## Task
 
 Each task instance has the following properties:
@@ -30,19 +35,19 @@ The Task Scheduler Library supports REST API endpoints which support the followi
   - **API Endpoint:** `POST`: `/tasks` (Protected API Route)
 
 
-- [ ] `Boolean cancel(Taskid)`
+- [x] `Boolean cancel(Taskid)`
 
   - **Description:** Takes in a Task Instance Id and cancels it. Returns a boolean value to confirm the task has been cancelled.
-  - **API Endpoint:** `DELETE`: `/tasks/<id>` (Protected API Route)
+  - **API Endpoint:** `PUT`: `/tasks/<id>/cancel` (Protected API Route)
 
 
-- [ ] `TaskStatus checkStatus(Taskid)`
+- [x] `TaskStatus checkStatus(Taskid)`
 
   - **Description:** Returns the status of the task instance.
-  - **API Endpoint:** TBD
+  - **API Endpoint:** `GET`: `/tasks/:taskID/status`
 
 
-- [ ] `Boolean modify(TaskId, timeInMS)`
+- [x] `Boolean modify(TaskId, timeInMS)`
 
   - **Description:** Takes in a Task Instance Id and a new time delay and updates the task’s schedule to the new one. Return a boolean value to indicate a successful modification.
   - **API Endpoint:** `PATCH`: `/tasks/<id>` (Protected API Route)

@@ -18,6 +18,10 @@ export interface TaskDocument extends Document {
   status: TaskStatus;
   updatedAt: Date;
   creatorEmail: string;
+  response: {
+    status: null | number;
+    body: string;
+  };
   // retryCount: number;
   // retryDelayInMS: number;
 }
@@ -48,6 +52,10 @@ const TaskSchema = new Schema<TaskDocument, TaskModelInterface>({
   creatorEmail: {
     type: String,
     default: "unspecified",
+  },
+  response: {
+    status: { type: Number, default: null },
+    body: { type: String, default: "" },
   },
 });
 

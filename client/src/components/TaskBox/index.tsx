@@ -4,12 +4,17 @@ import {
   leftColumn,
   rightColumn,
   columnDivider,
-  taskId,
+  taskCreator,
   taskURL,
   taskTime,
   taskStatus,
 } from "./taskbox.module.css";
 import { Link } from "gatsby";
+
+export type TaskResponse = {
+  status: null | number;
+  body: string;
+};
 
 export type TaskStatus =
   | "scheduled"
@@ -26,6 +31,7 @@ export interface Task {
   status: TaskStatus;
   updatedAt: Date;
   creatorEmail: string;
+  response: TaskResponse;
 }
 
 type TaskProps = {
@@ -44,7 +50,7 @@ export function getScheduledTimeString(creationTime: Date, delayInMS: number) {
   return result;
 }
 
-function getStatusTint(status: TaskStatus) {
+export function getStatusTint(status: TaskStatus) {
   switch (status) {
     case "failed":
       return "rgba(245, 128, 128, 0.5)";
@@ -59,7 +65,7 @@ function getStatusTint(status: TaskStatus) {
   }
 }
 
-function getStatusTextColor(status: TaskStatus) {
+export function getStatusTextColor(status: TaskStatus) {
   switch (status) {
     case "failed":
       return "rgba(200, 34, 34, 1)";
@@ -74,7 +80,7 @@ function getStatusTextColor(status: TaskStatus) {
   }
 }
 
-function getStatusString(status: TaskStatus) {
+export function getStatusString(status: TaskStatus) {
   switch (status) {
     case "failed":
       return "Failed";
@@ -93,7 +99,7 @@ const TaskBox = ({ task }: TaskProps) => (
   <div className={container}>
     <div className={columnDivider}>
       <div className={leftColumn}>
-        <p className={taskId}>{task._id}</p>
+        <p className={taskCreator}>{task.creatorEmail}</p>
         <Link to={`/app/task/${task._id}`}>
           <p className={taskURL}>{task.title ?? "#No title"}</p>
         </Link>
