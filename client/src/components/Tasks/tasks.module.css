@@ -1,0 +1,53 @@
+.taskFilterDiv {
+  padding: 2px 20px;
+}
+
+.taskFilterButton {
+  padding: 10px;
+  border-radius: 0;
+  border-style: solid;
+  background-color: #ddd;
+  border-color: #eee;
+  border-width: 0 1px 0 0;
+  font-size: 16px;
+  outline: none;
+}
+
+.taskFilterButton.selected {
+  background-color: #aaa;
+}
+
+.taskFilterButton:hover {
+  cursor: pointer;
+  background-color: #888;
+}
+
+.taskFilterButton:first-child {
+  border-radius: 3px 0 0 3px;
+}
+
+.taskFilterButton:last-child {
+  border-radius: 0 3px 3px 0;
+  border-width: 0;
+}
+
+.taskScheduleDiv {
+  padding: 2px 20px;
+}
+
+.taskScheduleButton {
+  padding: 10px;
+  border-radius: 4px;
+  border-style: solid;
+  background-color: #99ccf5;
+  border-color: #eee;
+  border-width: 1px;
+  font-size: 16px;
+  outline: none;
+}
+
+.taskOptionsDiv {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}

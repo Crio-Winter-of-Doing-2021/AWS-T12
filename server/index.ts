@@ -1,23 +1,38 @@
 import express, { NextFunction, Request, Response } from "express";
 import { json } from "body-parser";
 import cors from "cors";
-import routes from "./routes";
+import mongoose from "mongoose";
 
-import { clientOrigins, port } from "./config/env.dev";
+import routes from "./routes";
+import { clientOrigins, port, DB, NODE_ENV } from "./config/env.dev";
+import { refreshScheduler } from "./classes/Scheduler";
 
 require("dotenv").config();
 
 const app = express();
 app.use(cors({ origin: clientOrigins }));
 
-if (process.env.NODE_ENV === "Development") {
-  // // Set mongoose to debug mode
-  // mongoose.set("debug", true);
+// Connect to the database
+mongoose
+  .connect(DB, {
+    useNewUrlParser: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("Database connected successfully"))
+  .catch((err) => console.log(err));
+
+if (NODE_ENV === "Development") {
+  // Set mongoose to debug mode
+  mongoose.set("debug", true);
 
   // Add morgan for request-response logs
   const morgan = require("morgan");
   app.use(morgan("dev"));
 }
+
+refreshScheduler();
 
 app.use(json());
 
@@ -29,8 +44,8 @@ app.use(function (
   res: Response,
   _next: NextFunction
 ) {
-  console.log(err);
-  res.status(500).send(err.message);
+  console.error(err);
+  res.status(500).send("Internal Server Error. Contact arijitbiley@gmail.com");
 });
 
 app.listen(port, () => {
