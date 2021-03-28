@@ -8,7 +8,7 @@ Team Members:
 ## Current TODOs
 
 - [ ] Add query parameters for AWS Lambda
-- [ ] Add recall times (maybe not enough time)
+- [ ] Add recall times
 
 ## Task
 
