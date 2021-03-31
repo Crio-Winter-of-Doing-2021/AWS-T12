@@ -197,6 +197,13 @@ router.put("/:id/cancel", checkJwt, async (req: Request, res: Response) => {
     return;
   }
 
+  const loggedInUserEmail = req.user["https://dev-taskmaster-arijit.com/email"];
+  if (task.creatorEmail !== loggedInUserEmail) {
+    // Not authorised
+    res.status(403).json(false);
+    return;
+  }
+
   const cancelled = await cancel(taskId);
   res.status(cancelled ? 200 : 500).json(cancelled);
 });
@@ -215,6 +222,13 @@ router.patch("/:id", checkJwt, async (req: Request, res: Response) => {
   const task = await retrieveTaskInstance(taskId);
   if (task === null) {
     res.status(404).json(false);
+    return;
+  }
+
+  const loggedInUserEmail = req.user["https://dev-taskmaster-arijit.com/email"];
+  if (task.creatorEmail !== loggedInUserEmail) {
+    // Not authorised
+    res.status(403).json(false);
     return;
   }
 
