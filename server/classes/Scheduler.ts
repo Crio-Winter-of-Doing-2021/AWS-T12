@@ -279,7 +279,7 @@ export const schedule = async (
 export const refreshScheduler = async () => {
   // For tasks which were in running state (meaning the server failed
   // during their run), since we do not
-  // know their fate, we update their status to failed
+  // know their fate, we update their status to cancelled
   // to be on the safe side
   const runningTasks = await retrieveTaskInstances("running");
 
