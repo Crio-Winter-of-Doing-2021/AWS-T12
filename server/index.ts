@@ -45,7 +45,9 @@ app.use(function (
   _next: NextFunction
 ) {
   console.error(err);
-  res.status(500).send("Internal Server Error. Contact arijitbiley@gmail.com");
+  res
+    .status(err["status"] || 500)
+    .send("Internal Server Error. Contact arijitbiley@gmail.com");
 });
 
 app.listen(port, () => {

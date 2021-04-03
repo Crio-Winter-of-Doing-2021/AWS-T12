@@ -32,6 +32,9 @@ export interface Task {
   updatedAt: Date;
   creatorEmail: string;
   response: TaskResponse;
+  retryCount: number;
+  retryDelayInMS: number;
+  actualTryCount: number;
 }
 
 type TaskProps = {

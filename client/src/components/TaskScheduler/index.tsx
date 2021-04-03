@@ -2,7 +2,6 @@ import React, { useEffect, useReducer } from "react";
 import View from "../View";
 import { getProfile, getAccessToken } from "../../services/auth";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import DateTimePicker from "react-datetime-picker";
 import { navigate } from "gatsby";
 import {
   formError,
@@ -22,6 +21,16 @@ type FormData = {
   title?: string;
   taskURL?: string;
   scheduledTime?: string;
+  retryCount?: number;
+  retryDelayInMS?: number;
+};
+
+type FormDataErrors = {
+  title?: string;
+  taskURL?: string;
+  scheduledTime?: string;
+  retryCount?: string;
+  retryDelayInMS?: string;
 };
 
 const getDelayFromNowInMS = (timeString: string) => {
@@ -36,8 +45,6 @@ const TaskScheduler = () => {
     return null;
   }
 
-  const { name } = currentUser;
-
   return (
     <View title="Schedule a Task">
       <Formik
@@ -45,6 +52,8 @@ const TaskScheduler = () => {
           title: "",
           taskURL: "",
           scheduledTime: "",
+          retryCount: undefined,
+          retryDelayInMS: undefined,
         }}
         onSubmit={async (values, actions) => {
           const jsonResponse = await fetch(`${API_URL}/tasks`, {
@@ -58,6 +67,8 @@ const TaskScheduler = () => {
               title: values.title,
               taskURL: values.taskURL,
               delayInMS: getDelayFromNowInMS(values.scheduledTime),
+              retryCount: values.retryCount,
+              retryDelayInMS: values.retryDelayInMS,
             }),
           });
 
@@ -72,7 +83,7 @@ const TaskScheduler = () => {
           navigate(`/app/task/${id}`);
         }}
         validate={(values: FormData) => {
-          const errors: FormData = {};
+          const errors: FormDataErrors = {};
           if (!values.title) {
             errors.title = "Title Required";
           }
@@ -84,6 +95,23 @@ const TaskScheduler = () => {
           } else {
             if (getDelayFromNowInMS(values.scheduledTime) < 0) {
               errors.scheduledTime = "Scheduled time needs to be in the future";
+            }
+          }
+          if (
+            values.retryCount === undefined ||
+            values.retryCount.toString(10) == ""
+          ) {
+            errors.retryCount = "No. of retries is needed";
+          } else if (values.retryCount < 0) {
+            errors.retryCount = "No of retries should be non-negative";
+          } else if (values.retryCount > 0) {
+            if (
+              values.retryDelayInMS === undefined ||
+              values.retryDelayInMS.toString(10) == ""
+            ) {
+              errors.retryDelayInMS = "Retry delay is needed";
+            } else if (values.retryDelayInMS < 0) {
+              errors.retryDelayInMS = "Retry delay should be non-negative";
             }
           }
           return errors;
@@ -115,6 +143,28 @@ const TaskScheduler = () => {
             <ErrorMessage name="scheduledTime">
               {(msg) => <div className={formError}>*{msg}</div>}
             </ErrorMessage>
+
+            <Field
+              name="retryCount"
+              className={formInput}
+              placeholder="# of Retries"
+            />
+            <ErrorMessage name="retryCount">
+              {(msg) => <div className={formError}>*{msg}</div>}
+            </ErrorMessage>
+
+            {parseInt(values.retryCount ?? "0", 10) > 0 && (
+              <>
+                <Field
+                  name="retryDelayInMS"
+                  className={formInput}
+                  placeholder="Delay between retries (in ms)"
+                />
+                <ErrorMessage name="retryDelayInMS">
+                  {(msg) => <div className={formError}>*{msg}</div>}
+                </ErrorMessage>
+              </>
+            )}
 
             <button type="submit" className={scheduleButton}>
               Schedule

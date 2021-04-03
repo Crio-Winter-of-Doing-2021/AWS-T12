@@ -156,7 +156,7 @@ router.post(
   "/",
   checkJwt,
   async (req: Request, res: Response, next: NextFunction) => {
-    const { title, taskURL, delayInMS } = req.body;
+    const { title, taskURL, delayInMS, retryCount, retryDelayInMS } = req.body;
 
     // If any of the three required body parameters (title, taskURL, delayInMS)
     // are missing then send Status 422: Unprocessable Entity
@@ -172,11 +172,22 @@ router.post(
       res.status(422).json("required body parameter 'delayInMS' missing");
       return;
     }
+    if (retryCount !== undefined && retryDelayInMS < 0) {
+      res.status(422).json("Retry delay needs to be non-negative");
+      return;
+    }
 
     const creatorEmail = req.user["https://dev-taskmaster-arijit.com/email"];
 
     try {
-      const id = await schedule(creatorEmail, title, taskURL, delayInMS);
+      const id = await schedule(
+        creatorEmail,
+        title,
+        taskURL,
+        delayInMS,
+        retryCount ?? 0,
+        retryDelayInMS ?? 0
+      );
 
       // Send response Status 201: Created
       // with the newly created task object's ID

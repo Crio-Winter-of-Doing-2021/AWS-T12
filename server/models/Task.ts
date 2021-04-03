@@ -22,8 +22,9 @@ export interface TaskDocument extends Document {
     status: null | number;
     body: string;
   };
-  // retryCount: number;
-  // retryDelayInMS: number;
+  retryCount: number;
+  retryDelayInMS: number;
+  actualTryCount: number;
 }
 
 // For model type
@@ -56,6 +57,18 @@ const TaskSchema = new Schema<TaskDocument, TaskModelInterface>({
   response: {
     status: { type: Number, default: null },
     body: { type: String, default: "" },
+  },
+  retryCount: {
+    type: Number,
+    default: 0,
+  },
+  retryDelayInMS: {
+    type: Number,
+    default: 0,
+  },
+  actualTryCount: {
+    type: Number,
+    default: 0,
   },
 });
 

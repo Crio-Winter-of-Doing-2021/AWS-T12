@@ -127,6 +127,20 @@ const finishTask = async (
   return true;
 };
 
+const addRetryEntry = async (taskId: string) => {
+  try {
+    const updatedTask = await TaskModel.findOneAndUpdate(
+      { _id: taskId },
+      { $inc: { actualTryCount: 1 } },
+      { new: true }
+    );
+    return updatedTask;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+};
+
 export const cancel = async (taskId: string) => {
   if (taskId in jobs) {
     jobs[taskId].cancel();
@@ -171,7 +185,9 @@ export const modify = async (taskId: string, delayInMS: number) => {
 
 const getTaskPerformer = (task: TaskDocument) => {
   const taskPerformer = async () => {
-    await updateTaskStatus(task._id, "running");
+    if (task.status !== "running") {
+      await updateTaskStatus(task._id, "running");
+    }
 
     try {
       const response = await fetch(task.taskURL, {
@@ -183,14 +199,34 @@ const getTaskPerformer = (task: TaskDocument) => {
           status: response.status,
           body: await response.text(),
         });
-      } else {
+
+        delete jobs[task._id];
+      } else if (task.actualTryCount >= task.retryCount) {
+        // This task has been invoked actualTryCount + 1 times
+        // If that is atleast retryCount + 1 times, then no more retries
         await finishTask(task._id, "failed", {
           status: response.status,
           body: "",
         });
-      }
 
-      delete jobs[task._id];
+        delete jobs[task._id];
+      } else {
+        // retries are left
+        const retriedTask = await addRetryEntry(task._id);
+
+        if (retriedTask.retryDelayInMS == 0) {
+          const retriedTaskPerformer = getTaskPerformer(retriedTask);
+          retriedTaskPerformer();
+        } else {
+          const jobTime = new Date(Date.now() + retriedTask.retryDelayInMS);
+
+          delete jobs[retriedTask._id];
+          jobs[retriedTask._id] = scheduleJob(
+            jobTime,
+            getTaskPerformer(retriedTask)
+          );
+        }
+      }
     } catch (e) {
       await finishTask(task._id, "failed", {
         status: null,
@@ -206,10 +242,15 @@ export const schedule = async (
   creatorEmail: string,
   title: string,
   taskURL: string,
-  delayInMS: number
+  delayInMS: number,
+  retryCount: number,
+  retryDelayInMS: number
 ) => {
   // If delay is negative, return null
   if (delayInMS < 0) return null;
+
+  // If retries have to be performed and retry delay is negative, return null
+  if (retryCount > 0 && retryDelayInMS < 0) return null;
 
   // Create the task object in the database
   const createdTask = await TaskModel.create({
@@ -219,6 +260,8 @@ export const schedule = async (
     delayInMS: delayInMS,
     updatedAt: new Date(),
     status: "scheduled",
+    retryCount: retryCount,
+    retryDelayInMS: retryDelayInMS,
   });
 
   if (delayInMS == 0) {
