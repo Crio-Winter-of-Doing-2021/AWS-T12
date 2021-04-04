@@ -22,6 +22,9 @@ const Header = () => (
         <Link to="/app/tasks" className={header__link}>
           Tasks
         </Link>
+        <Link to="/app/orchestrations" className={header__link}>
+          Orchestrations
+        </Link>
         <Link to="/app/profile" className={header__link}>
           Profile
         </Link>

@@ -1,0 +1,63 @@
+.orchestrationDetailsDiv {
+}
+
+.orchestrationInfoDiv {
+}
+
+.orchestrationInfo {
+  color: darkslategray;
+}
+
+.orchestrationInfoLabel {
+  font-weight: bold;
+  padding-right: 10px;
+}
+
+.orchestrationScheduledTimeDiv {
+}
+
+.orchestrationCancelDiv {
+  padding: 2px 8px;
+}
+
+.timeEditDiscardButton,
+.orchestrationCancelButton {
+  margin: 3px;
+  padding: 7px;
+  border-radius: 4px;
+  border-style: none;
+  background-color: #99ccf5;
+  border-width: 1px;
+  font-weight: bold;
+  color: rgba(200, 34, 34, 1);
+  font-size: 16px;
+  outline: none;
+  cursor: pointer;
+  background-color: rgba(245, 128, 128, 0.5);
+}
+
+.timeEditDiscardButton:hover,
+.orchestrationCancelButton:hover {
+  background-color: rgba(245, 128, 128, 0.7);
+}
+
+.timeEditButton,
+.timeEditSaveButton {
+  padding: 7px;
+  border-radius: 4px;
+  margin-left: 10px;
+  border-style: none;
+  background-color: #99ccf5;
+  border-width: 1px;
+  font-weight: bold;
+  color: rgba(0, 0, 100, 1);
+  font-size: 16px;
+  outline: none;
+  cursor: pointer;
+  background-color: rgba(105, 176, 220, 0.7);
+}
+
+.timeEditSaveButton:hover,
+.timeEditButton:hover {
+  background-color: rgba(105, 176, 220, 0.9);
+}
