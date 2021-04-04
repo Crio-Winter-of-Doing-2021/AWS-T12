@@ -6,6 +6,8 @@ export const orchestrationInfoLabel: string;
 export const orchestrationInfo: string;
 export const orchestrationCancelDiv: string;
 export const orchestrationCancelButton: string;
+export const orchestrationRefreshDiv: string;
+export const orchestrationRefreshButton: string;
 export const timeEditButton: string;
 export const timeEditSaveButton: string;
 export const timeEditDiscardButton: string;

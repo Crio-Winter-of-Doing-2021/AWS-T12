@@ -6,6 +6,8 @@ export const taskInfoLabel: string;
 export const taskInfo: string;
 export const taskCancelDiv: string;
 export const taskCancelButton: string;
+export const taskRefreshDiv: string;
+export const taskRefreshButton: string;
 export const timeEditButton: string;
 export const timeEditSaveButton: string;
 export const timeEditDiscardButton: string;

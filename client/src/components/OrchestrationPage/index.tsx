@@ -14,7 +14,9 @@ import {
   orchestrationInfoLabel,
   orchestrationInfo,
   //   taskCancelDiv,
-  //   taskCancelButton,
+  //   taskCancelDiv,
+  orchestrationRefreshDiv,
+  orchestrationRefreshButton,
   orchestrationScheduledTimeDiv,
   //   timeEditButton,
   //   timeEditSaveButton,
@@ -75,17 +77,7 @@ const OrchestrationPage = ({ orchestrationID }: OrchestrationPageProps) => {
     setTimeDelayBetweenRetriesInMS(orchestration.timeDelayBetweenRetriesInMS);
     setConditionalCheckRetries(orchestration.conditionCheckRetries);
     setConditionCheckDelayInMS(orchestration.conditionCheckDelayInMS);
-    //     const tzoffset = new Date().getTimezoneOffset() * 60000;
-    //     const offsetDate = new Date(
-    //       new Date(orchestration.updatedAt).getTime() + orchestration.initialDelayInMS - tzoffset
-    //     );
-    //     setScheduledTime(offsetDate.toISOString().slice(0, -8));
   };
-
-  //   const currentUser = getProfile();
-  //   if (!("email" in currentUser)) {
-  //     return null;
-  //   }
 
   const loadOrchestration = async (orchestrationID: string) => {
     try {
@@ -115,6 +107,11 @@ const OrchestrationPage = ({ orchestrationID }: OrchestrationPageProps) => {
     }
   };
 
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    await loadOrchestration(orchestrationID);
+  };
+
   useEffect(() => {
     loadOrchestration(orchestrationID);
   }, []);
@@ -131,6 +128,15 @@ const OrchestrationPage = ({ orchestrationID }: OrchestrationPageProps) => {
 
   return (
     <View title={`${title}`}>
+      <div className={orchestrationRefreshDiv}>
+        <button
+          type="button"
+          className={orchestrationRefreshButton}
+          onClick={handleRefresh}
+        >
+          Refresh
+        </button>
+      </div>
       <div className={orchestrationInfoDiv}>
         <label className={orchestrationInfoLabel}>Created by:</label>
         <span className={orchestrationInfo}>{creatorEmail}</span>

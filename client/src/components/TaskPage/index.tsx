@@ -16,6 +16,8 @@ import {
   taskInfo,
   taskCancelDiv,
   taskCancelButton,
+  taskRefreshDiv,
+  taskRefreshButton,
   taskScheduledTimeDiv,
   timeEditButton,
   timeEditSaveButton,
@@ -164,12 +166,17 @@ const TaskPage = ({ taskID }: TaskPageProps) => {
     }
   };
 
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    await loadTask(taskID);
+  };
+
   useEffect(() => {
     loadTask(taskID);
   }, []);
 
   if (isLoading) {
-    return <View title="Loading" />;
+    return <View title="Loading..." />;
   }
 
   if (isNotFound) {
@@ -178,6 +185,16 @@ const TaskPage = ({ taskID }: TaskPageProps) => {
 
   return (
     <View title={`${title}`}>
+      <div className={taskRefreshDiv}>
+        <button
+          type="button"
+          className={taskRefreshButton}
+          onClick={handleRefresh}
+        >
+          Refresh
+        </button>
+      </div>
+
       <div className={taskDetailsDiv}>
         <div className={taskInfoDiv}>
           <label className={taskInfoLabel}>URL:</label>

@@ -36,6 +36,8 @@ export default () => {
           </a>
         </p>
       );
+    } else {
+      logout();
     }
   }
 
