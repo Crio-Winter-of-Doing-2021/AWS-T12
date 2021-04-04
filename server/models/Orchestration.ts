@@ -13,7 +13,7 @@ export type OrchestrationStatus =
 
 // Interface for Orchestration Schema
 // corresponding type declaration present in client side in
-// /client/src/components/...
+// /client/src/components/orchestrationbox/index.tsx
 export interface OrchestrationDocument extends Document {
   _id: string;
   title: string;
@@ -55,7 +55,7 @@ const OrchestrationSchema = new Schema<
     type: String,
     required: [true, "The Orchestration's fallback task URL is required"],
   },
-  SecondTaskURL: {
+  secondTaskURL: {
     type: String,
     required: [true, "The Orchestration's second task URL is required"],
   },

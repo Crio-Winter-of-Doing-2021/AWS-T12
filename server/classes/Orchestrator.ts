@@ -116,17 +116,17 @@ const updateOrchestrationStatus = async (
   status: OrchestrationStatus
 ) => {
   try {
-    await OrchestrationModel.findOneAndUpdate(
+    const updatedOrchestration = await OrchestrationModel.findOneAndUpdate(
       { _id: orchestrationID },
       { status: status },
       { new: true }
     );
+
+    return updatedOrchestration;
   } catch (e) {
     console.error(e);
-    return false;
+    return null;
   }
-
-  return true;
 };
 
 const finishOrchestration = async (
@@ -164,7 +164,10 @@ const addRetryEntry = async (orchestrationId: string) => {
 const getSecondTaskPerformer = (orchestration: OrchestrationDocument) => {
   const secondTaskPerformer = async () => {
     if (orchestration.status !== "running") {
-      await updateOrchestrationStatus(orchestration._id, "running");
+      orchestration = await updateOrchestrationStatus(
+        orchestration._id,
+        "running"
+      );
     }
 
     try {
@@ -190,7 +193,10 @@ const getSecondTaskPerformer = (orchestration: OrchestrationDocument) => {
 const getFallbackTaskPerformer = (orchestration: OrchestrationDocument) => {
   const fallbackTaskPerformer = async () => {
     if (orchestration.status !== "running") {
-      await updateOrchestrationStatus(orchestration._id, "running");
+      orchestration = await updateOrchestrationStatus(
+        orchestration._id,
+        "running"
+      );
     }
 
     try {
@@ -216,7 +222,10 @@ const getFallbackTaskPerformer = (orchestration: OrchestrationDocument) => {
 const getConditionalPerformer = (orchestration: OrchestrationDocument) => {
   const conditionalPerformer = async () => {
     if (orchestration.status !== "running") {
-      await updateOrchestrationStatus(orchestration._id, "running");
+      orchestration = await updateOrchestrationStatus(
+        orchestration._id,
+        "running"
+      );
     }
 
     try {
@@ -267,7 +276,10 @@ const getConditionalPerformer = (orchestration: OrchestrationDocument) => {
 
 const getOrchestrationPerformer = (orchestration: OrchestrationDocument) => {
   const orchestrationPerformer = async () => {
-    await updateOrchestrationStatus(orchestration._id, "running");
+    orchestration = await updateOrchestrationStatus(
+      orchestration._id,
+      "running"
+    );
 
     try {
       const response = await fetch(orchestration.firstTaskURL, {

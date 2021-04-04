@@ -1,0 +1,47 @@
+.container {
+  background-color: #ecdfdf;
+  border-radius: 10px;
+  padding: 10px 16px;
+}
+
+.columnDivider {
+  display: flex;
+}
+
+.leftColumn {
+  flex: 4;
+}
+
+.rightColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.orchestrationCreator {
+  margin: 0;
+  font-size: 13px;
+  color: gray;
+}
+
+.orchestrationTitle {
+  margin: 0;
+  font-size: 18px;
+  color: slategray;
+}
+
+.orchestrationTime {
+  margin: 0;
+  color: dimgray;
+}
+
+.orchestrationStatus {
+  margin: 0;
+  padding: 7px 10px;
+  border-radius: 5px;
+  min-width: 120px;
+  text-align: center;
+}
