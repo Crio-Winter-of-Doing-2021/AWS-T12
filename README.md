@@ -5,10 +5,15 @@ Team Members:
 - [Arijit Saha](https://github.com/TheArijitSaha)
 - [Rohit Kumar](https://github.com/IamRo45)
 
-## Current TODOs
+## Tech Stack
 
-- [ ] Add query parameters for AWS Lambda
-- [ ] Add recall times
+- Database: MongoDB
+- Backend (TypeScript):
+  - Node
+  - Express
+- Frontend (TypeScript):
+  - React
+  - Gatsby
 
 ## Task
 
@@ -16,6 +21,7 @@ Each task instance has the following properties:
 
 - `id`: ID that uniquely identifies a Task instance.
 - `taskURL`: The AWS Lambda Trigger API URL to be called.
+- `title`: The title of the task
 - `delayInMS`: The delay in milliseconds that taken into account from the creation time will give the scheduled run time.
 - `createdAt`: Timestamp storing the creation time of task instance.
 - `status`: A Task instance can be one of the following:
@@ -24,6 +30,10 @@ Each task instance has the following properties:
   - <span style="margin:2px;padding:2px;background-color:green; border-radius:3px">Completed (Success)</span>
   - <span style="margin:2px;padding:2px;background-color:maroon; border-radius:3px">Failed</span>
   - <span style="margin:2px;padding:2px;background-color:black;border-radius:3px">Cancelled</span>
+- `updatedAt`: Last timestamp of modification
+- `creatorEmail`: Email of the creator (unique for a user)
+- `response`: The response object with two keys `status` (response status) and `body` (the response body in text form)
+
 
 ## Functionality
 

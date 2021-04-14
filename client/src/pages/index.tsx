@@ -11,7 +11,7 @@ const Index = () => (
       <p>This is a task scheduler that helps you schedule Lambda functions.</p>
       <p>
         This is made as a CWoD project by team <code>AWS-T12</code>, whose
-        members are <code>Arijit Saha</code> and , <code>Rohit Kumar</code>.
+        members are <code>Arijit Saha</code> and <code>Rohit Kumar</code>.
       </p>
       <p>
         For the full experience, go to

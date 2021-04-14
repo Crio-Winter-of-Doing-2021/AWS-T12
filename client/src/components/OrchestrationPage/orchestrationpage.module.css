@@ -1,4 +1,7 @@
 .orchestrationDetailsDiv {
+  background-color: #ecdfdf;
+  border-radius: 10px;
+  padding: 40px 64px;
 }
 
 .orchestrationInfoDiv {

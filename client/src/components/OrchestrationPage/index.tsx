@@ -137,31 +137,31 @@ const OrchestrationPage = ({ orchestrationID }: OrchestrationPageProps) => {
           Refresh
         </button>
       </div>
-      <div className={orchestrationInfoDiv}>
-        <label className={orchestrationInfoLabel}>Created by:</label>
-        <span className={orchestrationInfo}>{creatorEmail}</span>
-      </div>
-
-      <div className={orchestrationScheduledTimeDiv}>
+      <div className={orchestrationDetailsDiv}>
         <div className={orchestrationInfoDiv}>
-          <label className={orchestrationInfoLabel}>Scheduled at:</label>
-          <span className={orchestrationInfo}>
-            {getScheduledTimeString(updatedAt, initialDelayInMS)}
+          <label className={orchestrationInfoLabel}>Created by:</label>
+          <span className={orchestrationInfo}>{creatorEmail}</span>
+        </div>
+
+        <div className={orchestrationScheduledTimeDiv}>
+          <div className={orchestrationInfoDiv}>
+            <label className={orchestrationInfoLabel}>Scheduled at:</label>
+            <span className={orchestrationInfo}>
+              {getScheduledTimeString(updatedAt, initialDelayInMS)}
+            </span>
+          </div>
+        </div>
+
+        <div className={orchestrationInfoDiv}>
+          <label className={orchestrationInfoLabel}>Status:</label>
+          <span
+            className={orchestrationInfo}
+            style={{ color: getStatusTextColor(status) }}
+          >
+            {getStatusString(status)}
           </span>
         </div>
-      </div>
 
-      <div className={orchestrationInfoDiv}>
-        <label className={orchestrationInfoLabel}>Status:</label>
-        <span
-          className={orchestrationInfo}
-          style={{ color: getStatusTextColor(status) }}
-        >
-          {getStatusString(status)}
-        </span>
-      </div>
-
-      <div className={orchestrationDetailsDiv}>
         <div className={orchestrationInfoDiv}>
           <label className={orchestrationInfoLabel}>First Task URL:</label>
           <span className={orchestrationInfo}>{firstTaskURL}</span>
@@ -183,7 +183,7 @@ const OrchestrationPage = ({ orchestrationID }: OrchestrationPageProps) => {
 
         <div className={orchestrationInfoDiv}>
           <label className={orchestrationInfoLabel}>
-            Conditional Check Retires:
+            Conditional Check Retries:
           </label>
           <span className={orchestrationInfo}>{conditionalCheckRetries}</span>
         </div>
